@@ -1,0 +1,25 @@
+{
+  "name": "rpi-radio-alarm-discordbot",
+  "version": "1.0.0",
+  "main": "bot.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "start": "node dist/bot.js"
+  },
+  "keywords": [],
+  "author": "bb4L",
+  "license": "ISC",
+  "dependencies": {
+    "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5",
+    "winston": "^3.2.1",
+    "xmlhttprequest": "^1.8.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^7.0.7"
+  },
+  "description": ""
+}

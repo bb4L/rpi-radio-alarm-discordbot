@@ -10,6 +10,13 @@ export class Api_helper {
         return JSON.parse(Api_helper.xmlHttp.responseText);
     };
 
+    public static changeAlarm: any = function(index:number, data:any){
+        Api_helper.xmlHttp.open("PUT", Api_helper.host + 'alarm/' + index, false);
+        Api_helper.xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        Api_helper.xmlHttp.send(JSON.stringify(data));
+        return JSON.parse(Api_helper.xmlHttp.responseText);
+    };
+
     public static turnOff: any = function (index: number) {
         Api_helper.xmlHttp.open("PUT", Api_helper.host + 'alarm/' + index, false);
         Api_helper.xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");

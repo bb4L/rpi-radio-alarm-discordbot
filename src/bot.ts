@@ -17,12 +17,9 @@ bot.on('message', function (user: User, userID: any, channelID: any, message: an
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
     if (message.substring(0, 1) == '!') {
-        let args = message.substring(1).split(' ');
+        let args = message.substring(1).split(' -');
         const cmd = args[0];
         let response = {};
-
-        mylogger.debug('we got a message');
-        mylogger.debug(cmd);
 
         args = args.splice(1);
         switch (cmd) {
@@ -45,13 +42,13 @@ bot.on('message', function (user: User, userID: any, channelID: any, message: an
             case 'alarm': {
                 switch (args[0]) {
                     case 'on': {
-                        response = Api_helper.turnOn(args[1]);
+                        response = Api_helper.changeAlarm(args[1], {"on": "true"});
                         bot.sendMessage({to: channelID, message: getAlarmString(response, '')});
                         break;
                     }
 
                     case 'off': {
-                        response = Api_helper.turnOff(args[1]);
+                        response = Api_helper.changeAlarm(args[1], {"on": "false"});
                         bot.sendMessage({to: channelID, message: getAlarmString(response, '')});
                         break;
                     }
@@ -74,23 +71,28 @@ bot.on('message', function (user: User, userID: any, channelID: any, message: an
 
                     case 'p': {
                         response = Api_helper.startRadio();
-                        mylogger.debug(response.toString());
-                        bot.sendMessage({to: channelID, message: ''});
+                        bot.sendMessage({to: channelID, message: 'isPlaying: ' + response['isPlaying']});
                         break;
                     }
 
                     case 's': {
                         response = Api_helper.stopRadio();
-                        mylogger.debug(response.toString());
+                        bot.sendMessage({to: channelID, message: 'isPlaying: ' + response['isPlaying']});
                         break;
                     }
                 }
                 break;
             }
 
-            default: {
-                mylogger.debug('DEFAULT');
+            case 'help': {
+                bot.sendMessage({
+                    to: channelID,
+                    message: "**Help** \n alarms   \t\t\t\t\t\t\t\t\t\t\t\t\t\t returns all the alarms \n alarm \t\t -[on/off] -[index]\t\t\t\t\t turns alarm on or off \n radio \t\t\t\t\t\t-[i] \t\t\t\t\t\t\t\tgets information if playing\n \t\t\t\t\t\t\t\t  -[p] \t\t\t\t\t\t\t\tstarts playing\n \t\t\t\t\t\t\t\t  -[s] \t\t\t\t\t\t\t\tstops playing"
+                });
+                break;
+            }
 
+            default: {
                 bot.sendMessage({to: channelID, message: `**THIS CALL IS UNKNOWN, YOU TRIED: \t ${cmd}**`});
                 break;
             }

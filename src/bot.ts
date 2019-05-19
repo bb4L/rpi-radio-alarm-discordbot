@@ -42,13 +42,13 @@ bot.on('message', function (user: User, userID: any, channelID: any, message: an
             case 'alarm': {
                 switch (args[0]) {
                     case 'on': {
-                        response = Api_helper.changeAlarm(args[1], {"on": "true"});
+                        response = Api_helper.changeAlarm(args[1], {"on": true});
                         bot.sendMessage({to: channelID, message: getAlarmString(response, '')});
                         break;
                     }
 
                     case 'off': {
-                        response = Api_helper.changeAlarm(args[1], {"on": "false"});
+                        response = Api_helper.changeAlarm(args[1], {"on": false});
                         bot.sendMessage({to: channelID, message: getAlarmString(response, '')});
                         break;
                     }
@@ -79,6 +79,10 @@ bot.on('message', function (user: User, userID: any, channelID: any, message: an
                         response = Api_helper.stopRadio();
                         bot.sendMessage({to: channelID, message: 'isPlaying: ' + response['isPlaying']});
                         break;
+                    }
+
+                    default: {
+                        bot.sendMessage({to: channelID, message: 'A option is required!'});
                     }
                 }
                 break;

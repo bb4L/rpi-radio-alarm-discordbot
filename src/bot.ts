@@ -1,41 +1,53 @@
 import {Api_helper, getAlarmString} from "./api_helper";
 
-import {User, Client} from "discord.io";
-import * as mylogger from "winston";
+import {Client} from "discord.js";
+import * as winston from "winston";
+
+const mylogger = winston.createLogger({
+    level: 'info',
+    format: winston.format.combine(winston.format.timestamp(), winston.format.prettyPrint()),
+    transports: [
+        new winston.transports.Console({level: 'debug'}),
+        new winston.transports.File({filename: 'infolog.log', level: 'info'})
+    ]
+});
 
 // Initialize Discord Bot
-const bot = new Client({
-    token: require('../auth.json').token,
-    autorun: true
+const bot = new Client();
+bot.on('ready',  ()=> {
+    mylogger.info("ONLINE");
+    const channel = this.channels.find(ch => ch.name === 'general');
+    if (!channel) return;
+    channel.send('I am online!');
 });
-bot.on('ready', function (evt: any) {
-    mylogger.info('Connected');
-    mylogger.info('Logged in as: ');
-    mylogger.info(bot.username + ' - (' + bot.id + ')');
-});
-bot.on('message', function (user: User, userID: any, channelID: any, message: any, evt: any) {
+
+bot.on('message', function (msg) {
+    let message = msg.content;
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
-    if (message.substring(0, 1) == '!') {
+    if (message.substring(0, 1) === '!') {
         let args = message.substring(1).split(' -');
         const cmd = args[0];
         let response = {};
-
+        msg.channel.send("args");
         args = args.splice(1);
         switch (cmd) {
             case 'ping': {
-                bot.sendMessage({
-                    to: channelID,
-                    message: 'Pong!'
-                });
+                msg.channel.send('Pong!');
                 break;
             }
 
             case 'alarms': {
                 const alarms = Api_helper.getAlarms();
-                for (let i = 0; i < alarms.length; i++) {
-                    bot.sendMessage({to: channelID, message: getAlarmString(alarms[i], i)});
+                if (alarms.length == 0) {
+                    msg.channel.send('no alarms found');
                 }
+                mylogger.info(alarms);
+                let text = '';
+                for (let i = 0; i < alarms.length; i++) {
+                    text += getAlarmString(alarms[i], i) + '\n';
+                }
+                msg.channel.send(text);
                 break;
             }
 
@@ -43,13 +55,13 @@ bot.on('message', function (user: User, userID: any, channelID: any, message: an
                 switch (args[0]) {
                     case 'on': {
                         response = Api_helper.changeAlarm(args[1], {"on": true});
-                        bot.sendMessage({to: channelID, message: getAlarmString(response, '')});
+                        msg.channel.send(getAlarmString(response, ''));
                         break;
                     }
 
                     case 'off': {
                         response = Api_helper.changeAlarm(args[1], {"on": false});
-                        bot.sendMessage({to: channelID, message: getAlarmString(response, '')});
+                        msg.channel.send(getAlarmString(response, ''));
                         break;
                     }
                 }
@@ -62,44 +74,44 @@ bot.on('message', function (user: User, userID: any, channelID: any, message: an
                         response = Api_helper.getRadio();
                         mylogger.debug(response.toString());
                         if (response['isPlaying']) {
-                            bot.sendMessage({to: channelID, message: 'Radio is playing!'});
+                            msg.channel.send('Radio is playing!');
                         } else {
-                            bot.sendMessage({to: channelID, message: 'Radio is not playing!'});
+                            msg.channel.send('Radio is not playing!');
                         }
                         break;
                     }
 
                     case 'p': {
                         response = Api_helper.startRadio();
-                        bot.sendMessage({to: channelID, message: 'isPlaying: ' + response['isPlaying']});
+                        msg.channel.send('isPlaying: ' + response['isPlaying']);
                         break;
                     }
 
                     case 's': {
                         response = Api_helper.stopRadio();
-                        bot.sendMessage({to: channelID, message: 'isPlaying: ' + response['isPlaying']});
+                        msg.channel.send('isPlaying: ' + response['isPlaying']);
                         break;
                     }
 
                     default: {
-                        bot.sendMessage({to: channelID, message: 'A option is required!'});
+                        msg.channel.send('A option is required!');
                     }
                 }
                 break;
             }
 
             case 'help': {
-                bot.sendMessage({
-                    to: channelID,
-                    message: "**Help** \n alarms   \t\t\t\t\t\t\t\t\t\t\t\t\t\t returns all the alarms \n alarm \t\t -[on/off] -[index]\t\t\t\t\t turns alarm on or off \n radio \t\t\t\t\t\t-[i] \t\t\t\t\t\t\t\tgets information if playing\n \t\t\t\t\t\t\t\t  -[p] \t\t\t\t\t\t\t\tstarts playing\n \t\t\t\t\t\t\t\t  -[s] \t\t\t\t\t\t\t\tstops playing"
-                });
+                msg.channel.send("**Help** \n alarms   \t\t\t\t\t\t\t\t\t\t\t\t\t\t returns all the alarms \n alarm \t\t -[on/off] -[index]\t\t\t\t\t turns alarm on or off \n radio \t\t\t\t\t\t-[i] \t\t\t\t\t\t\t\tgets information if playing\n \t\t\t\t\t\t\t\t  -[p] \t\t\t\t\t\t\t\tstarts playing\n \t\t\t\t\t\t\t\t  -[s] \t\t\t\t\t\t\t\tstops playing"
+                );
                 break;
             }
 
             default: {
-                bot.sendMessage({to: channelID, message: `**THIS CALL IS UNKNOWN, YOU TRIED: \t ${cmd}**`});
+                msg.channel.send(`**THIS CALL IS UNKNOWN, YOU TRIED: \t ${cmd}**`);
                 break;
             }
         }
     }
 });
+
+bot.login(require('../config.json').token).then(()=>{mylogger.info("Login done")});

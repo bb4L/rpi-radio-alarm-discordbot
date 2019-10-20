@@ -14,11 +14,8 @@ const mylogger = winston.createLogger({
 
 // Initialize Discord Bot
 const bot = new Client();
-bot.on('ready',  ()=> {
+bot.on('ready', () => {
     mylogger.info("ONLINE");
-    const channel = this.channels.find(ch => ch.name === 'general');
-    if (!channel) return;
-    channel.send('I am online!');
 });
 
 bot.on('message', function (msg) {
@@ -29,7 +26,6 @@ bot.on('message', function (msg) {
         let args = message.substring(1).split(' -');
         const cmd = args[0];
         let response = {};
-        msg.channel.send("args");
         args = args.splice(1);
         switch (cmd) {
             case 'ping': {
@@ -114,4 +110,4 @@ bot.on('message', function (msg) {
     }
 });
 
-bot.login(require('../config.json').token).then(()=>{mylogger.info("Login done")});
+bot.login(require('../config.json').token);

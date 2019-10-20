@@ -5,13 +5,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "node dist/bot.js"
+    "start": "node dist/src/bot.js"
   },
   "keywords": [],
   "author": "bb4L",
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.5.1",
+    "install-peers": "^1.0.3",
     "tslint": "^5.16.0",
     "typescript": "^3.4.5",
     "winston": "^3.2.1",

@@ -1,4 +1,4 @@
-import {Api_helper, getAlarmString} from "./api_helper";
+import {Api_helper, getAlarmString, getCheckedAlarmChangeData} from "./api_helper";
 
 import {Client} from "discord.js";
 import * as winston from "winston";
@@ -60,6 +60,13 @@ bot.on('message', function (msg) {
                         msg.channel.send(getAlarmString(response, ''));
                         break;
                     }
+
+                    case 'c': {
+                        let realData = getCheckedAlarmChangeData(args[2]);
+                        response = Api_helper.changeAlarm(args[1], realData);
+                        msg.channel.send(getAlarmString(response, ''));
+                        break;
+                    }
                 }
                 break;
             }
@@ -97,7 +104,14 @@ bot.on('message', function (msg) {
             }
 
             case 'help': {
-                msg.channel.send("**Help** \n alarms   \t\t\t\t\t\t\t\t\t\t\t\t\t\t returns all the alarms \n alarm \t\t -[on/off] -[index]\t\t\t\t\t turns alarm on or off \n radio \t\t\t\t\t\t-[i] \t\t\t\t\t\t\t\tgets information if playing\n \t\t\t\t\t\t\t\t  -[p] \t\t\t\t\t\t\t\tstarts playing\n \t\t\t\t\t\t\t\t  -[s] \t\t\t\t\t\t\t\tstops playing"
+                msg.channel.send("**Help** \n" +
+                    "alarms \t\t\t\t\t\t\t\t\t\t\t\t\t\t\t returns all the alarms\n" +
+                    "alarm \t\t\t\t\t -[on]\t -[index]\t\t\tturns alarm on\n" +
+                    "\t\t\t\t\t\t\t\t-[off]\t -[index]\t\t\tturns alarm off\n" +
+                    "radio \t\t\t\t\t\t-[i] \t\t\t\t\t\t\t\t gets information if playing\n" +
+                    "\t\t\t\t\t\t\t\t-[p] \t\t\t\t\t\t\t\t  starts playing\n" +
+                    "\t\t\t\t\t\t\t\t-[s] \t\t\t\t\t\t\t\t  stops playing\n" +
+                    "\t\t\t\t\t\t\t\t-[c] -[index] -[object]\t\t\tchanges alarm\n"
                 );
                 break;
             }

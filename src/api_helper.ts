@@ -54,6 +54,32 @@ export class Api_helper {
 
 }
 
+export function getCheckedAlarmChangeData(rawData: string) {
+    let result = {};
+    let rawObj = JSON.parse(rawData);
+
+    if (typeof rawObj['name'] === 'string') {
+        result['name'] = rawObj['name'];
+    }
+    if (typeof rawObj['hour'] === 'number') {
+        result['hour'] = rawObj['hour'];
+    }
+    if (typeof rawObj['min'] === 'number') {
+        result['min'] = rawObj['min'];
+    }
+    if (Array.isArray(rawObj['days']) && rawObj['days'].every(it => typeof it == 'number')) {
+        result['days'] = rawObj['days'];
+    }
+    if (typeof rawObj['on'] === 'boolean') {
+        result['on'] = rawObj['on']
+    } else {
+        if (typeof rawObj['on'] === 'string') {
+            result['on'] = rawObj['on'] == "true";
+        }
+    }
+    return result;
+}
+
 export function getAlarmString(alarm, index) {
     return `__**Alarm ${index}**__  \n Name: ${alarm['name']} \n Time ${alarm['hour']}: ${alarm['min']}  \n Days: ${alarm['days']} \n on: ${alarm['on']}`;
 }

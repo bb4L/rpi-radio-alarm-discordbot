@@ -26,4 +26,4 @@ This should start the bot.
 
 # License
 
-This is published under the [3-Clause BSD License](LICENSE.md).
+This is published under the [LGPLv3](LICENSE).
